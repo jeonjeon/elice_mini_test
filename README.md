@@ -1,16 +1,5 @@
 # elice_mini_test
 
-A new Flutter application.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* elice coding test
+* 전략은 git-flow를 따르되 release dev 구분 및 PR은 생략한다.
+* 머지 전략은 merge로 한다.
