@@ -53,7 +53,6 @@ class FilteredCourseList extends StatelessWidget {
                     hasMore: maxCount > state.courseList.length,
                     index: index,
                     loadMore: () async {
-                      print(state.courseList.length);
                       context.read<CourseListBloc>().add(
                           CourseListLoadMoreEvent(
                               courseType: state.courseType));
