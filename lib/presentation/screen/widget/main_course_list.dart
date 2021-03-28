@@ -1,5 +1,9 @@
+import 'package:elice_mini_test/business_logic/bloc/course_list_bloc.dart';
 import 'package:elice_mini_test/business_logic/cubit/app_navigation_cubit.dart';
+import 'package:elice_mini_test/business_logic/cubit/main_course_list_cubit.dart';
 import 'package:elice_mini_test/core/constants/course_type.dart';
+import 'package:elice_mini_test/data/model/course_model.dart';
+import 'package:elice_mini_test/data/model/main_course_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +15,7 @@ class MainCourseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var _state = context.select((MainCourseListCubit cubit) => cubit.state);
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
@@ -18,15 +23,30 @@ class MainCourseList extends StatelessWidget {
         ),
         child: Column(
           children: [
-            courseList(context, CourseType.RECOMMENDED_COURSE),
-            courseList(context, CourseType.FREE_COURSE),
+            if (_state is MainCourseListInitial)
+              Center(
+                child: CircularProgressIndicator(),
+              ),
+            if (_state is MainCourseListError)
+              Center(
+                child: Text('인터넷 연결 상태를 확인해주세요.'),
+              ),
+            if (_state is MainCourseListSuccess &&
+                _state.mainCourseListModel.recommendedCourseList.isNotEmpty)
+              courseList(context, CourseType.RECOMMENDED_COURSE,
+                  _state.mainCourseListModel.recommendedCourseList),
+            if (_state is MainCourseListSuccess &&
+                _state.mainCourseListModel.freeCourseList.isNotEmpty)
+              courseList(context, CourseType.FREE_COURSE,
+                  _state.mainCourseListModel.freeCourseList),
           ],
         ),
       ),
     );
   }
 
-  Column courseList(BuildContext context, CourseType courseType) {
+  Column courseList(BuildContext context, CourseType courseType,
+      List<CourseModel> courseList) {
     return Column(
       children: [
         Padding(
@@ -46,6 +66,9 @@ class MainCourseList extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
+                  context
+                      .read<CourseListBloc>()
+                      .add(CourseListFetch(courseType: courseType));
                   context
                       .read<AppNavigationCubit>()
                       .goToCourseListScreen(courseType);
@@ -78,7 +101,13 @@ class MainCourseList extends StatelessWidget {
               return MaterialButton(
                 padding: EdgeInsets.all(0.0),
                 onPressed: () {
-                  print('clicked');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          Text('${courseList[index].title} course clicked!'),
+                      duration: Duration(milliseconds: 500),
+                    ),
+                  );
                 },
                 child: Column(
                   children: [
@@ -101,13 +130,14 @@ class MainCourseList extends StatelessWidget {
                             decoration: new BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text('dasdsad'),
+                            child:
+                                Image.network(courseList[index].logo_file_url),
                           ),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 14.0),
                             child: Text(
-                              "캐글 문제 풀이로 배우는 데이터 분석",
+                              courseList[index].title,
                               style: GoogleFonts.roboto(
                                 color: Color(0xffffffff),
                                 fontSize: 16,
@@ -137,7 +167,7 @@ class MainCourseList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "유준배 선생님",
+                            courseList[index].fullname,
                             style: GoogleFonts.roboto(
                               color: Color(0xff797a7b),
                               fontSize: 12,

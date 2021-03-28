@@ -1,4 +1,5 @@
 import 'package:elice_mini_test/business_logic/cubit/bottom_navigation_cubit.dart';
+import 'package:elice_mini_test/business_logic/cubit/main_course_list_cubit.dart';
 import 'package:elice_mini_test/presentation/screen/widget/main_qr_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,11 @@ class MainScreen extends StatelessWidget {
       appBar: mainAppBar(context),
       body: BlocBuilder<BottomNavigationCubit, BottomNavigationState>(
         builder: (_, state) {
-          return state.index == 0 ? MainCourseList() : MainQRScanner();
+          if (state.index == 0) {
+            context.read<MainCourseListCubit>().getMainCourseList();
+            return MainCourseList();
+          }
+          return MainQRScanner();
         },
       ),
       bottomNavigationBar: mainBottomNavigationBar(context),
