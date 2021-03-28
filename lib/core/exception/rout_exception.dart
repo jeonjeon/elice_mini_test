@@ -1,0 +1,1 @@
+class RouteException implements Exception {}

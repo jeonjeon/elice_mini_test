@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'widget/main_course_list.dart';
 
-class EliceMainScreen extends StatelessWidget {
+class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
