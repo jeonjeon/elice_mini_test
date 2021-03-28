@@ -6,27 +6,27 @@ abstract class CourseListState extends Equatable {
   List<Object> get props => [];
 }
 
-class CourseListInitial extends CourseListState {}
+class CourseListInitialState extends CourseListState {}
 
-class CourseListError extends CourseListState {}
+class CourseListErrorState extends CourseListState {}
 
-class CourseListSuccess extends CourseListState {
+class CourseListSuccessState extends CourseListState {
   final List<CourseModel> courseList;
   final int course_count;
   final CourseType courseType;
 
-  CourseListSuccess({
+  CourseListSuccessState({
     required this.courseType,
     required this.courseList,
     required this.course_count,
   });
 
-  CourseListSuccess copyWith({
+  CourseListSuccessState copyWith({
     List<CourseModel>? courseList,
     int? course_count,
     CourseType? courseType,
   }) {
-    return CourseListSuccess(
+    return CourseListSuccessState(
       courseList: courseList ?? this.courseList,
       course_count: course_count ?? this.course_count,
       courseType: courseType ?? this.courseType,

@@ -3,7 +3,6 @@ import 'package:elice_mini_test/business_logic/cubit/app_navigation_cubit.dart';
 import 'package:elice_mini_test/business_logic/cubit/main_course_list_cubit.dart';
 import 'package:elice_mini_test/core/constants/course_type.dart';
 import 'package:elice_mini_test/data/model/course_model.dart';
-import 'package:elice_mini_test/data/model/main_course_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,7 +67,7 @@ class MainCourseList extends StatelessWidget {
                 onPressed: () {
                   context
                       .read<CourseListBloc>()
-                      .add(CourseListFetch(courseType: courseType));
+                      .add(CourseListInitialEvent(courseType: courseType));
                   context
                       .read<AppNavigationCubit>()
                       .goToCourseListScreen(courseType);
@@ -97,14 +96,16 @@ class MainCourseList extends StatelessWidget {
                 width: 15.0,
               );
             },
+            itemCount: courseList.length,
             itemBuilder: (_, int index) {
+              CourseModel course = courseList[index];
+
               return MaterialButton(
                 padding: EdgeInsets.all(0.0),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content:
-                          Text('${courseList[index].title} course clicked!'),
+                      content: Text('${course.title} course clicked!'),
                       duration: Duration(milliseconds: 500),
                     ),
                   );
@@ -130,14 +131,16 @@ class MainCourseList extends StatelessWidget {
                             decoration: new BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child:
-                                Image.network(courseList[index].logo_file_url),
+                            child: Image.network(
+                              course.logo_file_url,
+                              errorBuilder: (_, __, ___) => Container(),
+                            ),
                           ),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 14.0),
                             child: Text(
-                              courseList[index].title,
+                              course.title,
                               style: GoogleFonts.roboto(
                                 color: Color(0xffffffff),
                                 fontSize: 16,
@@ -167,7 +170,7 @@ class MainCourseList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            courseList[index].fullname,
+                            course.fullname,
                             style: GoogleFonts.roboto(
                               color: Color(0xff797a7b),
                               fontSize: 12,
@@ -201,7 +204,6 @@ class MainCourseList extends StatelessWidget {
                 ),
               );
             },
-            itemCount: 5,
           ),
         ),
       ],

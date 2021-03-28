@@ -13,6 +13,7 @@ class CourseListScreen extends StatelessWidget {
         context.select((AppNavigationCubit cubit) => cubit.state);
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         backgroundColor: Color(0xff202044),
         brightness: Brightness.dark,
         leading: IconButton(

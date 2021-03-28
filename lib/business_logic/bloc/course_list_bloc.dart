@@ -14,67 +14,50 @@ class CourseListBloc extends Bloc<CourseListEvent, CourseListState> {
   final CourseListRepository courseListRepository;
 
   CourseListBloc({required this.courseListRepository})
-      : super(CourseListInitial());
+      : super(CourseListInitialState());
 
   @override
   Stream<CourseListState> mapEventToState(CourseListEvent event) async* {
-    if (event is CourseListFetch && !isMaxCount(state)) {
-      try {
-        if (state is CourseListInitial) {
-          final FilteredCourseListModel courseListModel =
-              await courseListRepository.getCourseList(FilterConditionModel(
-                  filterIsFree: event.courseType == CourseType.FREE_COURSE,
-                  filterIsRecommended:
-                      event.courseType == CourseType.RECOMMENDED_COURSE,
-                  offset: 0));
-          yield CourseListSuccess(
-              courseType: event.courseType,
-              courseList: courseListModel.courseList,
-              course_count: courseListModel.course_count);
-          return;
-        }
-        if (state is CourseListSuccess) {
-          final FilteredCourseListModel courseListModel =
-              await courseListRepository.getCourseList(FilterConditionModel(
-                  filterIsFree: event.courseType == CourseType.FREE_COURSE,
-                  filterIsRecommended:
-                      event.courseType == CourseType.RECOMMENDED_COURSE,
-                  offset: (state as CourseListSuccess).courseList.length));
-          yield courseListModel.courseList.isEmpty
-              ? (state as CourseListSuccess).copyWith(
-                  course_count: (state as CourseListSuccess).course_count)
-              : CourseListSuccess(
-                  courseType: event.courseType,
-                  courseList: (state as CourseListSuccess).courseList +
-                      courseListModel.courseList,
-                  course_count: (state as CourseListSuccess).course_count,
-                );
-          return;
-        }
-      } catch (_) {
-        yield CourseListError();
+    try {
+      if (event is CourseListInitialEvent) {
+        yield CourseListInitialState();
+        final FilteredCourseListModel courseListModel =
+            await courseListRepository.getCourseList(FilterConditionModel(
+                filterIsFree: event.courseType == CourseType.FREE_COURSE,
+                filterIsRecommended:
+                    event.courseType == CourseType.RECOMMENDED_COURSE,
+                offset: 0));
+        yield CourseListSuccessState(
+            courseType: event.courseType,
+            courseList: courseListModel.courseList,
+            course_count: courseListModel.course_count);
+        return;
       }
-      return;
+      if (event is CourseListLoadMoreEvent && !isMaxCount(state)) {
+        final FilteredCourseListModel courseListModel =
+            await courseListRepository.getCourseList(FilterConditionModel(
+                filterIsFree: event.courseType == CourseType.FREE_COURSE,
+                filterIsRecommended:
+                    event.courseType == CourseType.RECOMMENDED_COURSE,
+                offset: (state as CourseListSuccessState).courseList.length));
+        yield courseListModel.courseList.isEmpty
+            ? (state as CourseListSuccessState).copyWith(
+                course_count: (state as CourseListSuccessState).course_count)
+            : CourseListSuccessState(
+                courseType: event.courseType,
+                courseList: (state as CourseListSuccessState).courseList +
+                    courseListModel.courseList,
+                course_count: (state as CourseListSuccessState).course_count,
+              );
+        return;
+      }
+    } catch (_) {
+      yield CourseListErrorState();
     }
-    if (event is CourseListRefresh) {
-      yield CourseListInitial();
-      final FilteredCourseListModel courseListModel =
-          await courseListRepository.getCourseList(FilterConditionModel(
-              filterIsFree: event.courseType == CourseType.FREE_COURSE,
-              filterIsRecommended:
-                  event.courseType == CourseType.RECOMMENDED_COURSE,
-              offset: 0));
-
-      yield CourseListSuccess(
-          courseType: event.courseType,
-          courseList: courseListModel.courseList,
-          course_count: courseListModel.course_count);
-      print('CourseListRefresh');
-      return;
-    }
+    return;
   }
 
   bool isMaxCount(CourseListState state) =>
-      state is CourseListSuccess &&
+      state is CourseListSuccessState &&
       state.course_count == state.courseList.length;
 }

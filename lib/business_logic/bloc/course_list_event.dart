@@ -6,10 +6,10 @@ abstract class CourseListEvent {
   CourseListEvent(this.courseType);
 }
 
-class CourseListFetch extends CourseListEvent {
-  CourseListFetch({required courseType}) : super(courseType);
+class CourseListInitialEvent extends CourseListEvent {
+  CourseListInitialEvent({required courseType}) : super(courseType);
 }
 
-class CourseListRefresh extends CourseListEvent {
-  CourseListRefresh({required courseType}) : super(courseType);
+class CourseListLoadMoreEvent extends CourseListEvent {
+  CourseListLoadMoreEvent({required courseType}) : super(courseType);
 }
