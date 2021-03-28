@@ -9,3 +9,7 @@ abstract class CourseListEvent {
 class CourseListFetch extends CourseListEvent {
   CourseListFetch({required courseType}) : super(courseType);
 }
+
+class CourseListRefresh extends CourseListEvent {
+  CourseListRefresh({required courseType}) : super(courseType);
+}

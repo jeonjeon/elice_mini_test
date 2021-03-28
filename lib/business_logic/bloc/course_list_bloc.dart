@@ -28,6 +28,7 @@ class CourseListBloc extends Bloc<CourseListEvent, CourseListState> {
                       event.courseType == CourseType.RECOMMENDED_COURSE,
                   offset: 0));
           yield CourseListSuccess(
+              courseType: event.courseType,
               courseList: courseListModel.courseList,
               course_count: courseListModel.course_count);
           return;
@@ -43,6 +44,7 @@ class CourseListBloc extends Bloc<CourseListEvent, CourseListState> {
               ? (state as CourseListSuccess).copyWith(
                   course_count: (state as CourseListSuccess).course_count)
               : CourseListSuccess(
+                  courseType: event.courseType,
                   courseList: (state as CourseListSuccess).courseList +
                       courseListModel.courseList,
                   course_count: (state as CourseListSuccess).course_count,
@@ -50,9 +52,25 @@ class CourseListBloc extends Bloc<CourseListEvent, CourseListState> {
           return;
         }
       } catch (_) {
-        print('error ======= ${_.toString()}');
         yield CourseListError();
       }
+      return;
+    }
+    if (event is CourseListRefresh) {
+      yield CourseListInitial();
+      final FilteredCourseListModel courseListModel =
+          await courseListRepository.getCourseList(FilterConditionModel(
+              filterIsFree: event.courseType == CourseType.FREE_COURSE,
+              filterIsRecommended:
+                  event.courseType == CourseType.RECOMMENDED_COURSE,
+              offset: 0));
+
+      yield CourseListSuccess(
+          courseType: event.courseType,
+          courseList: courseListModel.courseList,
+          course_count: courseListModel.course_count);
+      print('CourseListRefresh');
+      return;
     }
   }
 
