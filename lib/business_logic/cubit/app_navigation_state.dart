@@ -1,27 +1,17 @@
 part of 'app_navigation_cubit.dart';
 
 @immutable
-abstract class AppNavigationState {}
+abstract class AppNavigationState extends Equatable {}
 
-class AppNavigationMainState extends AppNavigationState {}
+class AppNavigationMainState extends AppNavigationState {
+  @override
+  List<Object?> get props => [];
+}
 
 class AppNavigationCourseListState extends AppNavigationState {
-  final int count = Constant.courseListCount;
-  final bool filterIsFree;
-  final bool filterIsRecommended;
-  final int offset;
+  final CourseType courseType;
+  AppNavigationCourseListState({required this.courseType});
 
-  AppNavigationCourseListState({
-    required this.filterIsFree,
-    required this.filterIsRecommended,
-    required this.offset,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'filter_is_free': this.filterIsFree,
-      'filter_is_recommended': this.filterIsRecommended,
-      'offset': this.offset,
-    };
-  }
+  @override
+  List<Object?> get props => [courseType];
 }

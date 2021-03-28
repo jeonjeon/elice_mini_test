@@ -3,13 +3,13 @@ import 'package:http/http.dart' as http;
 
 // 각 filter condition별 리스트를 가져오기 위한 api
 class CourseApi {
-  static const _baseUrl = 'https://api-rest.elice.io';
+  static const _baseUrl = 'api-rest.elice.io';
   final http.Client _httpClient;
   CourseApi({http.Client? httpClient})
       : _httpClient = httpClient ?? http.Client();
 
   // 각 조건에 맞는 list fetch
-  Future<String> getCourseListWithFilter(Map<String, dynamic> params) async {
+  Future<String> getCourseListWithFilter(Map<String, String> params) async {
     var uri = Uri.https(_baseUrl, '/org/academy/course/list/', params);
     final response = await _httpClient.get(uri);
     if (response.statusCode != 200) {
