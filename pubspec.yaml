@@ -21,6 +21,8 @@ dependencies:
   equatable: ^2.0.0
   lazy_loading_list: ^1.0.1
   liquid_pull_to_refresh: ^3.0.0
+  webview_flutter: ^2.0.2
+  string_validator: ^0.3.0
 
 dev_dependencies:
   flutter_test:

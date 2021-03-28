@@ -11,25 +11,25 @@ class FilteredCourseList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CourseListBloc, CourseListState>(
       builder: (_, state) {
-        if (state is CourseListInitial) {
+        if (state is CourseListInitialState) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (state is CourseListError) {
+        if (state is CourseListErrorState) {
           return Center(
             child: Text('인터넷 연결 상태를 확인해 주세요.'),
           );
         }
 
-        if (state is CourseListSuccess && state.courseList.isNotEmpty) {
+        if (state is CourseListSuccessState && state.courseList.isNotEmpty) {
           return LiquidPullToRefresh(
             color: Color(0xff202044),
             springAnimationDurationInMilliseconds: 400,
             onRefresh: () async {
               context
                   .read<CourseListBloc>()
-                  .add(CourseListRefresh(courseType: state.courseType));
+                  .add(CourseListInitialEvent(courseType: state.courseType));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -54,9 +54,9 @@ class FilteredCourseList extends StatelessWidget {
                     index: index,
                     loadMore: () async {
                       print(state.courseList.length);
-                      context
-                          .read<CourseListBloc>()
-                          .add(CourseListFetch(courseType: state.courseType));
+                      context.read<CourseListBloc>().add(
+                          CourseListLoadMoreEvent(
+                              courseType: state.courseType));
                     },
                     child: MaterialButton(
                       height: 120.0,
@@ -84,7 +84,10 @@ class FilteredCourseList extends StatelessWidget {
                                 color: Color(0xfff0f0f0),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Image.network(course.logo_file_url),
+                              child: Image.network(
+                                course.logo_file_url,
+                                errorBuilder: (_, __, ___) => Container(),
+                              ),
                             ),
                           ),
                           SizedBox(
